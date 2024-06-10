@@ -44,7 +44,7 @@ A React-based video player that plays multiple videos sequentially, providing th
 - **src/components**: Contains React components including VideoPlayer, PlayPauseButton, SeekBar, and PlayTime.
 - **src/videoData.json**: JSON file containing video metadata.
 
-Acknowledgements
+## Acknowledgements
 
-[FontAwesome](https://fontawesome.com/) for icons.
-[React](https://reactjs.org/) and [TypeScript](https://www.typescriptlang.org/) for the development framework.
+- [FontAwesome](https://fontawesome.com/) for icons.
+- [React](https://reactjs.org/) and [TypeScript](https://www.typescriptlang.org/) for the development framework.
