@@ -21,7 +21,7 @@ A React-based video player that plays multiple videos sequentially, providing th
 
 1. **Clone the repository:**
    ```bash
-   git clone git@github.com:your-username/video-player.git
+   git clone https://github.com/nazimalitech/video-player.git
    cd video-player
 
 2. **Install dependencies:**
