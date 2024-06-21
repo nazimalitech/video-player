@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import videoData from '../videoData.json';
+import aiLabelData from '../test.json';
 import PlayPauseButton from './PlayPauseButton';
 import SeekBar from './SeekBar';
 import PlayTime from './PlayTime';
@@ -14,6 +15,11 @@ interface VideoRecording {
   url: string;
 }
 
+interface Value {
+  action: string;
+  accuracy: number;
+}
+
 const VideoPlayer: React.FC = () => {
   const [recordings] = useState<VideoRecording[]>(videoData.recordings);
   const [currentVideoIndex, setCurrentVideoIndex] = useState<number>(0);
@@ -21,6 +27,10 @@ const VideoPlayer: React.FC = () => {
   const [playTime, setPlayTime] = useState<number>(0);
   const [buffering, setBuffering] = useState<boolean>(true);
   const videoRefs = useRef<(HTMLVideoElement)[]>([]);
+  const startTimestamp = recordings[0].startTimestamp;
+  const [actionName, setActionName] = useState<string>('');
+  const [accuracy, setAccuracy] = useState<number>(0);
+  const labelMap = useRef<Map<number, Value>>(new Map());
 
   const totalDuration = recordings.reduce((acc, video) => {
     const seconds = (video.endTimestamp - video.startTimestamp) / 1000;
@@ -32,6 +42,13 @@ const VideoPlayer: React.FC = () => {
       videoRefs.current[currentVideoIndex]?.play();
     } else if (videoRefs.current[currentVideoIndex]) {
       videoRefs.current[currentVideoIndex]?.pause();
+    }
+    const entries = Object.entries(aiLabelData);
+    for (let [key, values] of entries) {
+      for (let i=0; i<values.length; i++) {
+        const value = { action: key, accuracy: values[i].accuracy };
+        labelMap.current.set(values[i].timestamp, value);
+      }
     }
   }, [isPlaying, currentVideoIndex]);
 
@@ -65,7 +82,20 @@ const VideoPlayer: React.FC = () => {
       return acc + Math.round(seconds);
     }, 0);
 
-    setPlayTime(previousVideosDuration + currentTime);
+    const timeElapsed = previousVideosDuration + currentTime;
+    setPlayTime(timeElapsed);
+    
+    const timeStampElapsed = timeElapsed * 1000;
+    for (const timestamp of Array.from(labelMap.current.keys())) {
+      if (startTimestamp + timeStampElapsed > timestamp) {
+        const value = labelMap.current.get(timestamp);
+        if (value) {
+          setActionName(value.action);
+          setAccuracy(value.accuracy);
+          labelMap.current.delete(timestamp);
+        }
+      }
+    }
   };
 
   const handleSeek = (time: number) => {
@@ -122,6 +152,9 @@ const VideoPlayer: React.FC = () => {
           playTime={playTime}
           totalDuration={totalDuration}
         />
+        {actionName !== '' && (
+          <div>AI Label: {actionName} - {accuracy}%</div>
+        )}
       </div>
     </div>
   );

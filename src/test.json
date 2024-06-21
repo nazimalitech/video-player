@@ -1,0 +1,22 @@
+{
+  "drinking": [
+      {"accuracy": 100, "timestamp": 1716350253000},
+      {"accuracy": 98, "timestamp": 1716350256000}
+  ],
+  "eating": [
+      {"accuracy": 95, "timestamp": 1716350259000},
+      {"accuracy": 97, "timestamp": 1716350262000}
+  ],
+  "smoking": [
+      {"accuracy": 90, "timestamp": 1716350265000},
+      {"accuracy": 92, "timestamp": 1716350268000}
+  ],
+  "phone usage": [
+      {"accuracy": 88, "timestamp": 1716350270000},
+      {"accuracy": 85, "timestamp": 1716350270500}
+  ],
+  "sleeping": [
+      {"accuracy": 99, "timestamp": 1716350261000},
+      {"accuracy": 96, "timestamp": 1716350264000}
+  ]
+}
