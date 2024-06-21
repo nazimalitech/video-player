@@ -20,7 +20,7 @@ const VideoPlayer: React.FC = () => {
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
   const [playTime, setPlayTime] = useState<number>(0);
   const [buffering, setBuffering] = useState<boolean>(true);
-  const videoRefs = useRef<(HTMLVideoElement | null)[]>([]);
+  const videoRefs = useRef<(HTMLVideoElement)[]>([]);
 
   const totalDuration = recordings.reduce((acc, video) => {
     const seconds = (video.endTimestamp - video.startTimestamp) / 1000;
@@ -68,6 +68,23 @@ const VideoPlayer: React.FC = () => {
     setPlayTime(previousVideosDuration + currentTime);
   };
 
+  const handleSeek = (time: number) => {
+    let cumulativeTime = 0;
+    for (let i = 0; i < recordings.length; i++) {
+      const videoDuration = (recordings[i].endTimestamp - recordings[i].startTimestamp) / 1000;
+      if (time < cumulativeTime + videoDuration) {
+        setCurrentVideoIndex(i);
+        if (videoRefs.current[i]) {
+          videoRefs.current[i].currentTime = time - cumulativeTime;
+        }
+        setPlayTime(time);
+        break;
+      } else {
+        cumulativeTime += videoDuration;
+      }
+    }
+  };
+
   return (
     <div className={styles.videoPlayerContainer}>
       {buffering && (
@@ -79,7 +96,7 @@ const VideoPlayer: React.FC = () => {
         {recordings.map((recording, index) => (
           <video
             key={recording.id}
-            ref={el => videoRefs.current[index] = el}
+            ref={el => el ? videoRefs.current[index] = el : null}
             width="854"
             height="480"
             controls={false}
@@ -99,7 +116,7 @@ const VideoPlayer: React.FC = () => {
         <SeekBar
           totalDuration={totalDuration}
           playTime={playTime}
-          onSeek={(time) => setPlayTime(time)}
+          onSeek={handleSeek}
         />
         <PlayTime
           playTime={playTime}
